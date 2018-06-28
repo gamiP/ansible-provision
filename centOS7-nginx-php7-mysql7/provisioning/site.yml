@@ -1,0 +1,22 @@
+---
+# 共通設定
+- hosts: all
+  become: true
+  user: vagrant
+  roles:
+    - common
+
+# webサーバー設定
+- hosts: bazzsaka-server
+  become: true
+  user: vagrant
+  roles:
+      #- nginx
+      #- php7
+      #    - composer
+      #    - phalcon3
+      - mysql
+      #    - redis
+      #- mysql-cli
+      - wordpress
+

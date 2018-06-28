@@ -1,0 +1,54 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+- name: リポジトリの追加
+  yum: name={{item}}
+  with_items:
+      #- http://ftp-srv2.kddilabs.jp/Linux/distributions/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+    - epel-release
+    - http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+
+- name: デフォルトから外す
+  replace: dest=/etc/yum.repos.d/{{item}} regexp="enabled *= *1" replace="enabled=0"
+  with_items:
+    - epel.repo
+    - remi.repo
+
+- name: SSL認証の更新
+  yum: name=ca-certificates state=latest disablerepo=epel
+
+- name: 必要な物を追加
+  yum: name={{item.name}} state=present enablerepo={{item.repo}}
+  with_items:
+    - name: git
+      repo: epel
+
+- name: NTPのインストール
+  yum: name=ntp state=present
+
+- name: NTPファイルの置き換え
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  notify: restart ntp
+
+- name: NTP閏秒の設定
+  template: src=ntpd.j2 dest=/etc/sysconfig/ntpd
+  notify: restart ntp
+
+- name: create symblelink
+  file: src=/usr/share/zoneinfo/Asia/Tokyo dest=/etc/localtime state=link force=yes
+
+- name: 時間を日本時間に変更
+  template: src=clock.j2 dest=/etc/sysconfig/clock
+
+- name: サービスの登録
+  service: name=ntpd state=started enabled=yes
+
+  #- name: iptables設定ファイルの置き換え
+  #template: src=iptables.conf.j2 dest=/etc/sysconfig/iptables
+  #notify: restart iptables
+
+- name: NSSのアップデート
+  yum: name=nss disablerepo=epel state=latest
+
+- name: lsofのインストール
+  yum: name=lsof disablerepo=epel state=latest
+

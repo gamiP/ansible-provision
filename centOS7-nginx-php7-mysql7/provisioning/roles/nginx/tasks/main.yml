@@ -1,0 +1,18 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+- name: nginxをインストールする
+  yum: name={{item.name}} state=present enablerepo={{item.repo}}
+  with_items:
+    - name: nginx
+      repo: epel
+
+- name: Firewall に nginxを通す
+  sudo: yes
+  firewalld: service=http permanent=true state=enabled immediate=true
+
+- name: defaut.confの書き換え
+  template: src=project.conf.j2 dest=/etc/nginx/conf.d/default.conf
+  notify: restart nginx
+
+- name: サービスの登録
+  service: name=nginx state=started enabled=yes

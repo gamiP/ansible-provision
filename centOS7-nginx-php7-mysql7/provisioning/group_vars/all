@@ -1,0 +1,27 @@
+---
+mysqld_5_7:
+  # root パスワード
+  root_password: 19901022
+  # 個人ユーザー
+  user: gamip
+  password: 19901022
+
+
+# WordPress database settings
+wp_version: 4.9.6
+wp_db_name: wordpress
+wp_db_user: gamip
+wp_db_password: 19901022
+sha1sum: cf65c621e9488491b37619da6a289ab08f53565b
+
+auto_up_disable: true
+
+#Define Core Update Level
+#true  = Development, minor, and major updates are all enabled
+#false = Development, minor, and major updates are all disabled
+#minor = Minor updates are enabled, development, and major updates are disabled
+core_update_level: true
+
+env:
+  type: all
+  env: local

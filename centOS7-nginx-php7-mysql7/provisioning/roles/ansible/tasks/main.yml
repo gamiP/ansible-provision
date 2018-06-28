@@ -1,0 +1,28 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+- name: Ansibleをインストール
+  yum: name={{item.name}} state=present enablerepo={{item.repo}}
+  with_items:
+    - name: ansible
+      repo: epel
+
+- name: ansibleの設定ファイルを変更する
+  template: src=ansible.cfg.j2 dest=/etc/ansible/ansible.cfg
+
+- name: フォルダを掘る
+  file: path=/home/vagrant/.ssh/private_keys state=directory owner=vagrant group=vagrant mode=0755
+
+- name: ログインに必要なprivate_keyをコピーする
+  copy: src=/Users/raharu/work/project_template/.vagrant/machines/{{item}}/virtualbox/private_key dest=/home/vagrant/.ssh/private_keys/{{item}}_private_key owner=vagrant group=vagrant mode=0600
+  with_items:
+    - web
+    - admin
+    - redis
+    - dbm
+    - dbs
+
+- name: デプロイ用フォルダ作成
+  file: path=/home/vagrant/work/deploy state=directory owner=vagrant group=vagrant mode=0775
+
+
+
